@@ -81,7 +81,7 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.example.citypro.CityProApplication</mainClass>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
                 <executions>
                     <execution>
