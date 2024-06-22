@@ -2,6 +2,7 @@ package com.example.citypro.services;
 
 import com.example.citypro.entites.*;
 import com.example.citypro.mapper.CityMapper;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -127,6 +128,16 @@ public class CityServices {
         }
 
         return distInfo;
+    }
+
+    public StreetView getStreetViewInfo(
+            double Lng,
+            double Lat
+    ){
+        StreetView streetView;
+        List<StreetView> result = cityMapper.findNearestPointInfo(Lng,Lat);
+        streetView = result.get(0);
+        return streetView;
     }
 
 }

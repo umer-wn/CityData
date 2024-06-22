@@ -2,6 +2,7 @@ package com.example.citypro.controller;
 import com.example.citypro.entites.DistInfo;
 import com.example.citypro.entites.ResultCode;
 import com.example.citypro.entites.UserName;
+import com.example.citypro.entites.StreetView;
 import com.example.citypro.services.CityServices;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -94,5 +95,18 @@ public class Controller {
             @Parameter(description = "纬度", required = true) @RequestParam("Lat") double Lat
     ){
         return cityServices.getDistInfo(Lon, Lat);
+    }
+
+    @GetMapping("/getStreetViewInfo")
+    @Operation(summary = "获取周围最近点的信息", description = "给出经纬度，获取对应的信息")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "信息获取成功"),
+            @ApiResponse(responseCode = "400", description = "信息获取失败")
+    })
+    public StreetView getStreetViewInfo(
+            @Parameter(description = "经度", required = true) @RequestParam("Lng") double Lng,
+            @Parameter(description = "纬度", required = true) @RequestParam("Lat") double Lat
+    ){
+        return cityServices.getStreetViewInfo(Lng, Lat);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.citypro.mapper;
 
 import com.example.citypro.entites.LandUse;
+import com.example.citypro.entites.StreetView;
 import com.example.citypro.entites.Users;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -36,4 +37,13 @@ public interface CityMapper {
             ") ASC " +
             "LIMIT 1")
     LandUse findNearestLevelPoint(@Param("Level")int Level, @Param("knownLon") double knownLon, @Param("knownLat") double knownLat);
+
+    @Select("SELECT * " +
+            "FROM street_view " +
+            "ORDER BY 6371 * ACOS(" +
+            "    COS(RADIANS(#{knownlat})) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS(#{knownlng})) + " +
+            "    SIN(RADIANS(#{knownlat})) * SIN(RADIANS(lat))" +
+            ") ASC " +
+            "LIMIT 1")
+    List<StreetView> findNearestPointInfo(@Param("knownlng") double knownlng, @Param("knownlat") double knownlat);
 }
