@@ -1,8 +1,5 @@
 package com.example.citypro.controller;
-import com.example.citypro.entites.DistInfo;
-import com.example.citypro.entites.ResultCode;
-import com.example.citypro.entites.UserName;
-import com.example.citypro.entites.StreetView;
+import com.example.citypro.entites.*;
 import com.example.citypro.services.CityServices;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +7,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.Arrays;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/cityInfo")
 public class Controller {
@@ -108,5 +111,29 @@ public class Controller {
             @Parameter(description = "纬度", required = true) @RequestParam("Lat") double Lat
     ){
         return cityServices.getStreetViewInfo(Lng, Lat);
+    }
+
+    @GetMapping("/cityNews")
+    public List<NewsItem> getNews() {
+        // 构造一些 NewsItem 对象，并设置特定的时间
+        List<NewsItem> newsItems = Arrays.asList(
+                new NewsItem(
+                        "前滩国际商务区获上海市绿色生态城区示范区称号 推动绿色发展与产业发展深度融合",
+                        LocalDateTime.of(2024, Month.JUNE, 26, 19, 20, 59),
+                        "https://www.jfdaily.com/sgh/detail?id=1354967"
+                ),
+                new NewsItem(
+                        "全力打造“上海北外滩、都市新标杆”，区领导调研北外滩街道",
+                        LocalDateTime.of(2024, Month.JUNE, 26, 22, 27, 23),
+                        "https://www.thepaper.cn/newsDetail_forward_27781564"
+                ),
+                new NewsItem(
+                        "产业发展和城市建设“加速度” 上海南汇“年轻的城”日新月异",
+                        LocalDateTime.of(2024, Month.JUNE, 26, 22, 7, 36),
+                        "https://baijiahao.baidu.com/s?id=1801845932847700684&wfr=spider&for=pc"
+                )
+        );
+
+        return newsItems;
     }
 }
