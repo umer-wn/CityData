@@ -136,4 +136,29 @@ public class Controller {
 
         return newsItems;
     }
+    @GetMapping("/addFavorite")
+    public ResultCode addFavorite(
+            @RequestParam("user_id")int user_id,
+            @RequestParam("Lat")double Lat,
+            @RequestParam("Lon")double Lon,
+            @RequestParam("note")String note
+    ){
+        return cityServices.addFavorite(user_id,Lat,Lon,note);
+    }
+
+    @GetMapping("/getUserFavorite")
+    public UserFavorite getUserFavorite(
+            @RequestParam("user_id")int user_id
+    ){
+        return cityServices.getUserFavorite(user_id);
+    }
+
+    @GetMapping("/deleteUserFavorite")
+    public ResultCode deleteUserFavorite(
+            @RequestParam("favorite_id")int favorite_id
+    ){
+        return cityServices.deleteUserFavorite(favorite_id);
+    }
+
+
 }

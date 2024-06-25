@@ -2,10 +2,8 @@ package com.example.citypro.services;
 
 import com.example.citypro.entites.*;
 import com.example.citypro.mapper.CityMapper;
-import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -110,17 +108,20 @@ public class CityServices {
         DistInfo distInfo = new DistInfo();
 
         try {
-            LandUse landUse1 = cityMapper.findNearestLevelPoint(502,Lon,Lat);
-            distInfo.setSchoolDist(getDist(landUse1.getLon(),landUse1.getLat(),Lon,Lat));
-
-            LandUse landUse2 = cityMapper.findNearestLevelPoint(505,Lon,Lat);
-            distInfo.setParkDist(getDist(landUse2.getLon(),landUse2.getLat(),Lon,Lat));
-
-            LandUse landUse3 = cityMapper.findNearestLevelPoint(503,Lon,Lat);
-            distInfo.setHospitalDist(getDist(landUse3.getLon(),landUse3.getLat(),Lon,Lat));
-
-            LandUse landUse4 = cityMapper.findNearestLevelPoint(301,Lon,Lat);
-            distInfo.setFactoryDist(getDist(landUse4.getLon(),landUse4.getLat(),Lon,Lat));
+//            LandUse landUse1 = cityMapper.findNearestLevelPoint(502,Lon,Lat);
+            distInfo.setSchoolDist(getNearDist(Lat,Lon,502));
+            distInfo.setParkDist(getNearDist(Lat,Lon,505));
+            distInfo.setHospitalDist(getNearDist(Lat,Lon,503));
+            distInfo.setFactoryDist(getNearDist(Lat,Lon,301));
+//
+//            LandUse landUse2 = cityMapper.findNearestLevelPoint(505,Lon,Lat);
+//            distInfo.setParkDist(getDist(landUse2.getLon(),landUse2.getLat(),Lon,Lat));
+//
+//            LandUse landUse3 = cityMapper.findNearestLevelPoint(503,Lon,Lat);
+//            distInfo.setHospitalDist(getDist(landUse3.getLon(),landUse3.getLat(),Lon,Lat));
+//
+//            LandUse landUse4 = cityMapper.findNearestLevelPoint(301,Lon,Lat);
+//            distInfo.setFactoryDist(getDist(landUse4.getLon(),landUse4.getLat(),Lon,Lat));
         }catch(Exception e){
             e.printStackTrace();
             distInfo.setResultCode(-1);
@@ -138,6 +139,90 @@ public class CityServices {
         List<StreetView> result = cityMapper.findNearestPointInfo(Lng,Lat);
         streetView = result.get(0);
         return streetView;
+    }
+
+    public double getNearDist(
+            double Lat,
+            double Lon,
+            int code
+    ) {
+        LandUse landUseTest = cityMapper.findNearestLevelPoint(code,Lon,Lat);
+        return getDist(landUseTest.getLon(), landUseTest.getLat(),Lon,Lat);
+    }
+    public ResultCode addFavorite(
+            int user_id,
+            double Lat,
+            double Lon,
+            String note
+    ){
+        try{
+            //首先我们需要获得各个位置的距离信息
+            Favorites favorites = new Favorites();
+            favorites.setUser_id(user_id);
+
+            List<Favorites>allFavorites = cityMapper.getAllFavorites();
+            if(allFavorites.size()==0){
+                favorites.setFavorite_id(0);
+            }else{
+                favorites.setFavorite_id(cityMapper.getMaxFavoriteID()+1);
+            }
+            System.out.println(favorites.getFavorite_id());
+
+            //写入距离信息
+            favorites.setDistance0101(getNearDist(Lat,Lon,101));
+            favorites.setDistance0201(getNearDist(Lat,Lon,201));
+            favorites.setDistance0202(getNearDist(Lat,Lon,202));
+            favorites.setDistance0301(getNearDist(Lat,Lon,301));
+            favorites.setDistance0401(1);
+            favorites.setDistance0402(getNearDist(Lat,Lon,402));
+            favorites.setDistance0403(getNearDist(Lat,Lon,403));
+            favorites.setDistance0501(getNearDist(Lat,Lon,501));
+            favorites.setDistance0502(getNearDist(Lat,Lon,502));
+            favorites.setDistance0503(getNearDist(Lat,Lon,503));
+            favorites.setDistance0504(getNearDist(Lat,Lon,504));
+            favorites.setDistance0505(getNearDist(Lat,Lon,505));
+
+            favorites.setNote(note);
+            cityMapper.insertFavorite(favorites.getFavorite_id(), favorites.getUser_id(),
+                    Lon, Lat, favorites.getDistance0101(),
+                    favorites.getDistance0201(), favorites.getDistance0202(), favorites.getDistance0301(),
+                    favorites.getDistance0401(), favorites.getDistance0402(), favorites.getDistance0403(),
+                    favorites.getDistance0501(), favorites.getDistance0502(), favorites.getDistance0503(),
+                    favorites.getDistance0504(), favorites.getDistance0505(), note);
+
+            return new ResultCode(1);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResultCode(-404);
+        }
+    }
+
+    public UserFavorite getUserFavorite(
+            int user_id
+    ){
+        UserFavorite userFavorite = new UserFavorite();
+        try {
+            userFavorite.setValue(cityMapper.getUserFavorites(user_id));
+            userFavorite.setResultCode(1);
+            return userFavorite;
+        }catch (Exception e){
+            userFavorite.setResultCode(-404);
+            return userFavorite;
+        }
+    }
+
+    public ResultCode deleteUserFavorite(
+            int favorite_id
+    ){
+        ResultCode rc= new ResultCode(1);
+
+        try {
+            cityMapper.deleteFavoriteItems(favorite_id);
+            return rc;
+        }catch (Exception e){
+            rc.setResultCode(-404);
+            return rc;
+        }
     }
 
 }
